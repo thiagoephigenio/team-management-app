@@ -5,13 +5,14 @@ import { Controller, HttpRequest, HttpResponse } from '../../protocols';
 export class CreateTeamController implements Controller {
   private readonly createTeam: CreateTeam;
 
-  constructor(createTeam:CreateTeam) {
+  constructor(createTeam: CreateTeam) {
     this.createTeam = createTeam;
   }
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const { name } = httpRequest.body;
+      console.log('oiiiii')
       const team = await this.createTeam.create({
         name
       })

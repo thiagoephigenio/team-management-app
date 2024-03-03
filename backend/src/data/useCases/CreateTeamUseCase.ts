@@ -1,16 +1,16 @@
 import { TeamModel } from '../../domain/models/Team';
 import { CreateTeam, CreateTeamModel } from '../../domain/useCases/CreateTeam';
-import { CreateTeamRepository } from '../protocols/CreateTeamRepository';
+import { TeamRepository } from '../protocols/TeamRepository';
 
 export class CreateTeamUseCase implements CreateTeam {
-  private readonly createTeamRepository: CreateTeamRepository;
+  private readonly teamRepository: TeamRepository;
 
-  constructor(createTeamRepository: CreateTeamRepository) {
-    this.createTeamRepository = createTeamRepository;
+  constructor(teamRepository: TeamRepository) {
+    this.teamRepository = teamRepository;
   }
 
   async create(team: CreateTeamModel): Promise<TeamModel> {
-    const result = await this.createTeamRepository.add(team);
+    const result = await this.teamRepository.add(team);
 
     return result;
   };
