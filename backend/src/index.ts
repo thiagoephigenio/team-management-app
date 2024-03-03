@@ -5,6 +5,8 @@ import TeamDbRepository from './infra/database/TeamDbRepository'
 import { DeleteTeamController } from './presentation/controllers/team/DeleteTeamController'
 import { DeleteTeamUseCase } from './data/useCases/DeleteTeamUseCase'
 import { bodyJsonCoworkerSchema, bodyJsonTeamSchema } from './httpRequestSchema'
+import { FetchTeamsUseCase } from './data/useCases/FetchTeamsUseCase'
+import { FetchTeamsController } from './presentation/controllers/team/FetchTeamsController'
 
 const app = fastify({logger: true});
 app.addContentTypeParser(
@@ -23,11 +25,13 @@ app.addContentTypeParser(
 const teamDbRepository = new TeamDbRepository();
 const createTeamUseCase = new CreateTeamUseCase(teamDbRepository);
 const deleteTeamUseCase = new DeleteTeamUseCase(teamDbRepository);
+const fetchTeamsUseCase = new FetchTeamsUseCase(teamDbRepository);
 const createTeamController = new CreateTeamController(createTeamUseCase);
 const deleteTeamController = new DeleteTeamController(deleteTeamUseCase);
+const fetchTeamsController = new FetchTeamsController(fetchTeamsUseCase);
 
-app.get('/teams', async (request, reply) => {
-  //TODO
+app.get('/teams', async () => {
+  return fetchTeamsController.handle();
 })
 
 app.post('/team', {schema: {body:  bodyJsonTeamSchema}}, async (request, _reply) => createTeamController.handle(request))

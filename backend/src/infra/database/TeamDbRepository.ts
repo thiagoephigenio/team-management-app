@@ -2,18 +2,19 @@ import { TeamRepository } from '../../data/protocols/TeamRepository';
 import { TeamModel } from '../../domain/models/Team';
 import { CreateTeamModel } from '../../domain/useCases/CreateTeam';
 import nedb from 'nedb';
+import { teamMapper } from './mappers/teamMapper';
+import { TeamDbModel } from './models/TeamDbModel';
 
 export default class TeamDbRepository implements TeamRepository {
   db = new nedb({filename: 'nedb/team.db', autoload: true});
   
   public async add(team: CreateTeamModel): Promise<TeamModel> {
     const createdTeam = await new Promise<TeamModel>((resolve, reject) =>{
-      console.log('team', team)
       this.db.insert(team, function (err, result) {
         if (err) {
           reject(err);
         } else {
-          resolve({id: result._id, name: result.name})
+          resolve(teamMapper(result as TeamDbModel))
         }
       });
     })
@@ -31,5 +32,19 @@ export default class TeamDbRepository implements TeamRepository {
         }
       });
     })
+  }
+
+  public async fetch(): Promise<TeamModel[]> {
+    const teams = await new Promise<TeamModel[]>((resolve, reject) =>{
+      this.db.find({}, function (err: Error, result: TeamDbModel[]) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result.map(team => teamMapper(team)))
+        }
+      });
+    })
+
+    return teams;
   }
 }
