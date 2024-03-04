@@ -8,11 +8,12 @@ const bodyJsonTeamSchema = {
 
 const bodyJsonCoworkerSchema = {
   type: 'object',
-  required: ['name', 'email', 'phone'],
+  required: ['name', 'email', 'phone', 'teamId'],
   properties: {
     name: { type: 'string' },
     email: { type: 'string' },
     phone: { type: 'string' },
+    teamId: { type: 'string' },
   }
 }
 

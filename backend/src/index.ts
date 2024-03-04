@@ -7,6 +7,15 @@ import { DeleteTeamUseCase } from './data/useCases/DeleteTeamUseCase'
 import { bodyJsonCoworkerSchema, bodyJsonTeamSchema } from './httpRequestSchema'
 import { FetchTeamsUseCase } from './data/useCases/FetchTeamsUseCase'
 import { FetchTeamsController } from './presentation/controllers/team/FetchTeamsController'
+import CoworkerDbRepository from './infra/database/CoworkerDbRepository'
+import { CreateCoworkerController } from './presentation/controllers/coworker/CreateCoworker'
+import { CreateCoworkerUseCase } from './data/useCases/CreateCoworkerUseCase'
+import { UpdateCoworkerUseCase } from './data/useCases/UpdateCoworkerUseCase'
+import { UpdateCoworkerController } from './presentation/controllers/coworker/UpdateCoworkerController'
+import { FetchCoworkersController } from './presentation/controllers/coworker/FetchCoworkersController'
+import { DeleteCoworkerController } from './presentation/controllers/coworker/DeleteCoworker'
+import { FetchCoworkersUseCase } from './data/useCases/FetchCoworkers'
+import { DeleteCoworkerUseCase } from './data/useCases/DeleteCoworker'
 
 const app = fastify({logger: true});
 app.addContentTypeParser(
@@ -23,10 +32,19 @@ app.addContentTypeParser(
 );
 
 const teamDbRepository = new TeamDbRepository();
+const coworkerDbRepository = new CoworkerDbRepository();
 const createTeamUseCase = new CreateTeamUseCase(teamDbRepository);
+const createCoworkerUseCase = new CreateCoworkerUseCase(coworkerDbRepository);
+const updateCoworkerUseCase = new UpdateCoworkerUseCase(coworkerDbRepository);
+const fetchCoworkersUseCase = new FetchCoworkersUseCase(coworkerDbRepository, teamDbRepository);
+const deleteCoworkerUseCase = new DeleteCoworkerUseCase(coworkerDbRepository);
 const deleteTeamUseCase = new DeleteTeamUseCase(teamDbRepository);
 const fetchTeamsUseCase = new FetchTeamsUseCase(teamDbRepository);
 const createTeamController = new CreateTeamController(createTeamUseCase);
+const createCoworkerController = new CreateCoworkerController(createCoworkerUseCase);
+const updateCoworkerController = new UpdateCoworkerController(updateCoworkerUseCase);
+const fetchCoworkersController = new FetchCoworkersController(fetchCoworkersUseCase);
+const deleteCoworkerController = new DeleteCoworkerController(deleteCoworkerUseCase);
 const deleteTeamController = new DeleteTeamController(deleteTeamUseCase);
 const fetchTeamsController = new FetchTeamsController(fetchTeamsUseCase);
 
@@ -41,15 +59,19 @@ app.delete('/team/:teamId', async (request, reply) => {
 })
 
 app.get('/coworkers', async (request, reply) => {
-  //TODO
+  return fetchCoworkersController.handle();
 })
 
 app.post('/coworker', {schema: {body:  bodyJsonCoworkerSchema}}, async (request, reply) => {
-  //TODO
+  return createCoworkerController.handle(request);
 })
 
-app.delete('/coworker/:id', async (request, reply) => {
-  //TODO
+app.put('/coworker', {schema: {body:  bodyJsonCoworkerSchema}}, async (request, reply) => {
+  return updateCoworkerController.handle(request);
+})
+
+app.delete('/coworker/:coworkerId', async (request, reply) => {
+  return deleteCoworkerController.handle(request);
 })
 
 app.listen({ port: 8080 }, (err) => {

@@ -1,8 +1,6 @@
-import { CreateTeam } from '../../../domain/useCases/CreateTeam';
-import { DeleteTeam } from '../../../domain/useCases/DeleteTeam';
 import { FetchTeams } from '../../../domain/useCases/FetchTeams';
 import { ok, serverError } from '../../helpers/http-helpers';
-import { Controller, HttpRequest, HttpResponse } from '../../protocols';
+import { Controller, HttpResponse } from '../../protocols';
 
 export class FetchTeamsController implements Controller {
   private readonly fetchTeams: FetchTeams;

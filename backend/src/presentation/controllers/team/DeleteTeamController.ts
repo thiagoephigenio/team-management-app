@@ -1,4 +1,3 @@
-import { CreateTeam } from '../../../domain/useCases/CreateTeam';
 import { DeleteTeam } from '../../../domain/useCases/DeleteTeam';
 import { ok, serverError } from '../../helpers/http-helpers';
 import { Controller, HttpRequest, HttpResponse } from '../../protocols';

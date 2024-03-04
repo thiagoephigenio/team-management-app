@@ -12,7 +12,6 @@ export class CreateTeamController implements Controller {
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const { name } = httpRequest.body;
-      console.log('oiiiii')
       const team = await this.createTeam.create({
         name
       })
