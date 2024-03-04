@@ -6,4 +6,5 @@ export interface CoworkerRepository {
   delete : (coworkerId: string) => Promise<void>;
   update : (coworker: CoworkerModel) => Promise<void>;
   fetch: () => Promise<CoworkerModel[]>;
+  findByTeam: (teamId: string) => Promise<CoworkerModel[]>;
 }

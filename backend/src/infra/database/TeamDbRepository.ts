@@ -47,4 +47,19 @@ export default class TeamDbRepository implements TeamRepository {
 
     return teams;
   }
+
+  public async findById(teamId: string): Promise<TeamModel>{
+    const team = await new Promise<TeamModel>((resolve, reject) =>{
+      this.db.findOne({_id: teamId}, function (err: Error | null, result: TeamDbModel) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(teamMapper(result))
+        }
+      });
+    })
+
+    return team;
+  };
+  
 }

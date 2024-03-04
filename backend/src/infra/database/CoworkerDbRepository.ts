@@ -54,11 +54,25 @@ export default class CoworkerDbRepository implements CoworkerRepository {
         if (err) {
           reject(err);
         } else {
-          resolve(result.map(coworker => coworkerMapper(coworker)))
+          resolve(result.map(coworker => coworkerMapper(coworker)));
         }
       });
     })
 
     return coworkers;
   }
+
+  public async findByTeam(teamId: string): Promise<CoworkerModel[]> {
+    const coworkers = await new Promise<CoworkerModel[]>((resolve, reject) =>{
+      this.db.find({teamId}, function (err: Error | null, result: CoworkerDbModel[]) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result.map(coworker => coworkerMapper(coworker)));
+        }
+      });
+    })
+
+    return coworkers;
+  };
 }

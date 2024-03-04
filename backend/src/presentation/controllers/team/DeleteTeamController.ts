@@ -1,5 +1,5 @@
 import { DeleteTeam } from '../../../domain/useCases/DeleteTeam';
-import { ok, serverError } from '../../helpers/http-helpers';
+import { badRequest, ok, serverError } from '../../helpers/http-helpers';
 import { Controller, HttpRequest, HttpResponse } from '../../protocols';
 
 export class DeleteTeamController implements Controller {
@@ -15,6 +15,10 @@ export class DeleteTeamController implements Controller {
       const result = await this.deleteTeam.delete(teamId);
       return ok(result);
     } catch (error) {
+
+      if ((error as Error).message === 'DELETION_ERROR') {
+        return badRequest({name: 'DELETION_ERROR', message: 'error: cannot remove team'})
+      }
       return serverError();
     }
   }
