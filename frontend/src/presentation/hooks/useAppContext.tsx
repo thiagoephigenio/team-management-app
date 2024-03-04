@@ -46,24 +46,24 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   function addTeam(team: Team) {
-    setTeams((prev) => [...prev, team]);
+    setTeams((prev) => [...(prev as []), team]);
   }
   function deleteTeam(teamId: string) {
-    setTeams((prev) => prev.filter((team) => team.id !== teamId));
+    setTeams((prev) => prev?.filter((team) => team.id !== teamId));
   }
   function addCoworker(coworker: Coworker) {
-    setCoworkers((prev) => [...prev, coworker]);
+    setCoworkers((prev) => [...(prev as []), coworker]);
   }
   function updateCoworker(coworker: Coworker) {
     setCoworkers((prev) =>
-      prev.map((currentCoworker) =>
+      prev?.map((currentCoworker) =>
         currentCoworker.id === coworker.id ? coworker : currentCoworker,
       ),
     );
   }
   function deleteCoworker(coworkerId: string) {
     setCoworkers((prev) =>
-      prev.filter((coworker) => coworker.id !== coworkerId),
+      prev?.filter((coworker) => coworker.id !== coworkerId),
     );
   }
 
@@ -90,4 +90,4 @@ const useAppContext = () => {
   return context;
 };
 
-export { AppProvider, useAppContext };
+export { useAppContext, AppProvider };
