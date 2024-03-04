@@ -5,26 +5,21 @@ import { useState } from 'react';
 import { useModal } from '../../hooks/useModal';
 import { DeleteTeam } from './delete-team';
 import { TeamForm } from './team-form';
+import { useAppContext } from '../../hooks/useAppContext';
 
 export type Team = {
   id: string;
   name: string;
 };
 
-const columns = ['#ID', 'Nome da Equipe'];
-const rows = [
-  {
-    id: '123',
-    name: 'RH',
-  },
-  {
-    id: '234',
-    name: 'TI',
-  },
+const columns = [
+  { name: 'id', title: '#ID' },
+  { name: 'name', title: 'Nome da Equipe' },
 ];
 
 export function TeamsList() {
   const { handleOpenModal, handleCloseModal, Modal } = useModal();
+  const { teams } = useAppContext();
   const [currentRow, setCurrentRow] = useState<Team | undefined>();
   const [action, setAction] = useState<'add' | 'delete'>('add');
   const title = {
@@ -47,7 +42,7 @@ export function TeamsList() {
       <S.Button onClick={handleAddTeam}>Adicionar equipe</S.Button>
       <DataTable
         columns={columns}
-        rows={rows}
+        rows={teams}
         actions={[
           {
             icon: <DeleteIcon fill="#e52e54" />,

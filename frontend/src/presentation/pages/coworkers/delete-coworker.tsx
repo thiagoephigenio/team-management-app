@@ -1,3 +1,5 @@
+import { deleteCoworkerRequest } from '../../../services/api';
+import { useAppContext } from '../../hooks/useAppContext';
 import { Coworker } from './coworkers-list';
 import * as S from './delete-coworker.styles';
 
@@ -10,8 +12,16 @@ export function DeleteCoworker({
   onCloseModal,
   coworker,
 }: DeleteCoworkerProps) {
+  const { deleteCoworker } = useAppContext();
   async function handleDeleteCoworker() {
-    console.log(coworker?.id);
+    if (coworker) {
+      try {
+        await deleteCoworkerRequest(coworker.id);
+        deleteCoworker(coworker.id);
+      } catch (error) {
+        console.error(error);
+      }
+    }
     onCloseModal();
   }
 

@@ -5,8 +5,17 @@ import * as S from './coworker-form.styles';
 import { Input } from '../../components/input';
 import { normalizePhoneNumber } from '../../../helpers/masks';
 import { phoneNumberValidation } from '../../../helpers/validations';
+import {
+  createCoworkerRequest,
+  updateCoworkerRequest,
+} from '../../../services/api';
+import { useAppContext } from '../../hooks/useAppContext';
+import { AxiosError } from 'axios';
+import { Team } from '../teams/teams-list';
+import { Coworker } from './coworkers-list';
 
 const coworkerFormSchema = z.object({
+  id: z.union([z.string(), z.undefined()]),
   name: z.string().min(1, 'O nome é obrigatório.'),
   email: z
     .string()
@@ -19,20 +28,50 @@ const coworkerFormSchema = z.object({
   teamId: z.union([z.string(), z.undefined()]),
 });
 
-type CoworkerData = z.infer<typeof coworkerFormSchema>;
+export type CoworkerData = z.infer<typeof coworkerFormSchema>;
 type CoworkerFormProps = {
-  coworker?: CoworkerData;
+  action: 'add' | 'edit';
+  coworker?: Coworker;
+  onCloseModal: () => void;
 };
 
-export function CoworkerForm({ coworker }: CoworkerFormProps) {
+export function CoworkerForm({
+  action,
+  coworker,
+  onCloseModal,
+}: CoworkerFormProps) {
+  const { addCoworker, updateCoworker, teams, coworkers } = useAppContext();
+  const defaultValues =
+    action === 'edit' && coworker
+      ? coworkers.find((item) => item.id === coworker.id)
+      : undefined;
   const coworkerForm = useForm<CoworkerData>({
     resolver: zodResolver(coworkerFormSchema),
-    defaultValues: coworker,
+    defaultValues: { ...defaultValues, teamId: defaultValues?.team.id },
   });
   const { handleSubmit } = coworkerForm;
 
-  function handleSubmitCoworker(data: CoworkerData) {
-    console.log('oi', data);
+  async function handleSubmitCoworker(data: CoworkerData) {
+    try {
+      if (action === 'add') {
+        const createdCoworker = await createCoworkerRequest(data);
+        addCoworker(createdCoworker);
+      } else {
+        await updateCoworkerRequest(data);
+        const { teamId, ...rest } = data;
+        const team = teams.find((item) => item.id === teamId) ?? ({} as Team);
+        if (coworker) {
+          updateCoworker({
+            ...rest,
+            id: coworker.id,
+            team,
+          });
+        }
+      }
+      onCloseModal();
+    } catch (error) {
+      console.error((error as AxiosError).response?.data);
+    }
   }
 
   return (
@@ -56,8 +95,11 @@ export function CoworkerForm({ coworker }: CoworkerFormProps) {
         <Input.Root>
           <Input.Label>Equipe</Input.Label>
           <Input.Select name="teamId">
-            <option value="12">asdasd</option>
-            <option value="13">ateste</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
           </Input.Select>
           <Input.ErrorMessage field="teamId" />
         </Input.Root>

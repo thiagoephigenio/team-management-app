@@ -6,40 +6,36 @@ import EditIcon from '../../../assets/edit.svg?react';
 import * as S from './coworkers-list.styles';
 import { DeleteCoworker } from './delete-coworker';
 import { useModal } from '../../hooks/useModal';
+import { useAppContext } from '../../hooks/useAppContext';
+import { Team } from '../teams/teams-list';
 
 export interface Coworker {
   id: string;
   name: string;
   email: string;
   phone: string;
-  teamId: string;
+  team: Team;
 }
-
-const columns = ['#ID', 'Nome', 'Equipe', 'Telefone', 'E-mail'];
-const rows = [
-  {
-    id: '1',
-    name: 'Thiago Ephigenio',
-    teamId: '12',
-    phone: '(41) 3423-7903',
-    email: 'thiagocosta130@gmail.com',
-  },
-  {
-    id: '2',
-    name: 'João da Silva',
-    teamId: '13',
-    phone: '(41) 3423-7903',
-    email: 'thiagocosta130@gmail.com',
-  },
-];
-
-type Teste = {
-  id: string;
+type CoworkerRow = Omit<Coworker, 'team'> & {
+  team: string;
 };
+
+const columns = [
+  { name: 'id', title: '#ID' },
+  { name: 'name', title: 'Nome' },
+  { name: 'team', title: 'Equipe' },
+  { name: 'phone', title: 'Telefone' },
+  { name: 'email', title: 'E-mail' },
+];
 
 export function CoworkersList() {
   const { handleOpenModal, handleCloseModal, Modal } = useModal();
-  const [currentRow, setCurrentRow] = useState<(typeof rows)[0] | undefined>();
+  const { coworkers } = useAppContext();
+  const coworkerRows = coworkers.map((coworker) => ({
+    ...coworker,
+    team: coworker.team.name,
+  }));
+  const [currentRow, setCurrentRow] = useState<Coworker>();
   const [action, setAction] = useState<'add' | 'edit' | 'delete'>('add');
   const title = {
     add: 'Adicionar colega de trabalho',
@@ -51,14 +47,16 @@ export function CoworkersList() {
     setAction('add');
     handleOpenModal();
   }
-  function handleEditCoworker(event: Teste) {
+  function handleEditCoworker(event: CoworkerRow) {
+    const coworker = coworkers.find((item) => item.id === event.id);
     setAction('edit');
-    setCurrentRow(event as unknown as (typeof rows)[0]);
+    setCurrentRow(coworker);
     handleOpenModal();
   }
-  function handleDeleteTeam(event: Teste) {
+  function handleDeleteTeam(event: CoworkerRow) {
+    const coworker = coworkers.find((item) => item.id === event.id);
     setAction('delete');
-    setCurrentRow(event as unknown as (typeof rows)[0]);
+    setCurrentRow(coworker);
     handleOpenModal();
   }
 
@@ -67,21 +65,25 @@ export function CoworkersList() {
       <S.Button onClick={handleAddCoworker}>Adicionar colega</S.Button>
       <DataTable
         columns={columns}
-        rows={rows}
+        rows={coworkerRows}
         actions={[
           {
             icon: <EditIcon fill="#4b5563" />,
-            callback: (value) => handleEditCoworker(value as Teste),
+            callback: (value) => handleEditCoworker(value as CoworkerRow),
           },
           {
             icon: <DeleteIcon fill="#e52e54" />,
-            callback: (value) => handleDeleteTeam(value as Teste),
+            callback: (value) => handleDeleteTeam(value as CoworkerRow),
           },
         ]}
       />
       <Modal title={title[action]}>
         {action !== 'delete' ? (
-          <CoworkerForm coworker={action === 'edit' ? currentRow : undefined} />
+          <CoworkerForm
+            action={action}
+            coworker={action === 'edit' ? currentRow : undefined}
+            onCloseModal={handleCloseModal}
+          />
         ) : (
           <DeleteCoworker
             coworker={currentRow}
