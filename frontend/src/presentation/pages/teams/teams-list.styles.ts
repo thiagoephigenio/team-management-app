@@ -21,3 +21,13 @@ export const Button = styled.button`
     filter: brightness(0.9);
   }
 `;
+
+export const EmptyListInfo = styled.div`
+  height: calc(100vh - 14rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  p {
+    color: #969cb3;
+  }
+`;

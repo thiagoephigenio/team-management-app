@@ -30,8 +30,8 @@ const columns = [
 
 export function CoworkersList() {
   const { handleOpenModal, handleCloseModal, Modal } = useModal();
-  const { coworkers } = useAppContext();
-  const coworkerRows = coworkers.map((coworker) => ({
+  const { isLoadingData, coworkers } = useAppContext();
+  const coworkerRows = coworkers?.map((coworker) => ({
     ...coworker,
     team: coworker.team.name,
   }));
@@ -48,35 +48,46 @@ export function CoworkersList() {
     handleOpenModal();
   }
   function handleEditCoworker(event: CoworkerRow) {
-    const coworker = coworkers.find((item) => item.id === event.id);
+    const coworker = coworkers?.find((item) => item.id === event.id);
     setAction('edit');
     setCurrentRow(coworker);
     handleOpenModal();
   }
   function handleDeleteTeam(event: CoworkerRow) {
-    const coworker = coworkers.find((item) => item.id === event.id);
+    const coworker = coworkers?.find((item) => item.id === event.id);
     setAction('delete');
     setCurrentRow(coworker);
     handleOpenModal();
   }
 
+  if (isLoadingData || !coworkerRows) {
+    return <>loading...</>;
+  }
+
   return (
     <S.Container>
       <S.Button onClick={handleAddCoworker}>Adicionar colega</S.Button>
-      <DataTable
-        columns={columns}
-        rows={coworkerRows}
-        actions={[
-          {
-            icon: <EditIcon fill="#4b5563" />,
-            callback: (value) => handleEditCoworker(value as CoworkerRow),
-          },
-          {
-            icon: <DeleteIcon fill="#e52e54" />,
-            callback: (value) => handleDeleteTeam(value as CoworkerRow),
-          },
-        ]}
-      />
+      {(!coworkerRows.length && (
+        <S.EmptyListInfo>
+          <p>Nenhum colega de trabalho cadastrado.</p>
+        </S.EmptyListInfo>
+      )) || (
+        <DataTable
+          columns={columns}
+          rows={coworkerRows}
+          actions={[
+            {
+              icon: <EditIcon fill="#4b5563" />,
+              callback: (value) => handleEditCoworker(value as CoworkerRow),
+            },
+            {
+              icon: <DeleteIcon fill="#e52e54" />,
+              callback: (value) => handleDeleteTeam(value as CoworkerRow),
+            },
+          ]}
+        />
+      )}
+
       <Modal title={title[action]}>
         {action !== 'delete' ? (
           <CoworkerForm

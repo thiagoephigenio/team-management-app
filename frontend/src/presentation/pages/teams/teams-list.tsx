@@ -19,7 +19,7 @@ const columns = [
 
 export function TeamsList() {
   const { handleOpenModal, handleCloseModal, Modal } = useModal();
-  const { teams } = useAppContext();
+  const { isLoadingData, teams } = useAppContext();
   const [currentRow, setCurrentRow] = useState<Team | undefined>();
   const [action, setAction] = useState<'add' | 'delete'>('add');
   const title = {
@@ -37,19 +37,30 @@ export function TeamsList() {
     handleOpenModal();
   }
 
+  if (isLoadingData || !teams) {
+    return <>loading...</>;
+  }
+
   return (
     <S.Container>
       <S.Button onClick={handleAddTeam}>Adicionar equipe</S.Button>
-      <DataTable
-        columns={columns}
-        rows={teams}
-        actions={[
-          {
-            icon: <DeleteIcon fill="#e52e54" />,
-            callback: (value) => handleDeleteTeam(value as Team),
-          },
-        ]}
-      />
+      {(!teams.length && (
+        <S.EmptyListInfo>
+          <p>Nenhuma equipe cadastrada.</p>
+        </S.EmptyListInfo>
+      )) || (
+        <DataTable
+          columns={columns}
+          rows={teams}
+          actions={[
+            {
+              icon: <DeleteIcon fill="#e52e54" />,
+              callback: (value) => handleDeleteTeam(value as Team),
+            },
+          ]}
+        />
+      )}
+
       <Modal title={title[action]}>
         {action === 'add' ? (
           <TeamForm onCloseModal={handleCloseModal} />

@@ -4,8 +4,8 @@ import { Coworker } from '../pages/coworkers/coworkers-list';
 import { fetchCoworkersRequest, fetchTeamsRequest } from '../../services/api';
 
 type AppContextProps = {
-  teams: Team[];
-  coworkers: Coworker[];
+  teams?: Team[];
+  coworkers?: Coworker[];
   isLoadingData: boolean;
   addTeam: (team: Team) => void;
   deleteTeam: (teamId: string) => void;
@@ -17,8 +17,8 @@ type AppContextProps = {
 const AppContext = createContext({} as AppContextProps);
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [coworkers, setCoworkers] = useState<Coworker[]>([]);
+  const [teams, setTeams] = useState<Team[]>();
+  const [coworkers, setCoworkers] = useState<Coworker[]>();
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   useEffect(() => {
