@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import { enqueueSnackbar } from 'notistack';
 import { deleteTeamRequest } from '../../../services/api';
 import { useAppContext } from '../../hooks/useAppContext';
 import * as S from './delete-team.styles';
@@ -17,6 +17,9 @@ export function DeleteTeam({ onCloseModal, team }: DeleteCoworkerProps) {
         await deleteTeamRequest(team.id);
         deleteTeam(team.id);
       } catch (error) {
+        enqueueSnackbar('A equipe possui membros vinculados.', {
+          variant: 'error',
+        });
         console.error(error);
       }
     }

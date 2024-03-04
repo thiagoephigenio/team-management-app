@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from './components/header/header';
 import * as S from './app.styles';
+import { SnackbarProvider } from 'notistack';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <S.Main>
         <Outlet />
       </S.Main>
+      <SnackbarProvider />
       <S.GlobalStyle />
     </>
   );
