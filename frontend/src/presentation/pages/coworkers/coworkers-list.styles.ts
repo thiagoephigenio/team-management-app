@@ -6,6 +6,15 @@ export const Container = styled.div`
   padding: 0 10px;
 `;
 
+export const LoadingContainer = styled.div`
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+`;
+
 export const Button = styled.button`
   margin-top: 1rem;
   margin-left: auto;

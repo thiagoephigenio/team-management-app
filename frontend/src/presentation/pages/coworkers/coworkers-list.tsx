@@ -8,6 +8,7 @@ import { DeleteCoworker } from './delete-coworker';
 import { useModal } from '../../hooks/useModal';
 import { useAppContext } from '../../hooks/useAppContext';
 import { Team } from '../teams/teams-list';
+import { Spinner } from '../../components/loading/spinner';
 
 export interface Coworker {
   id: string;
@@ -61,7 +62,11 @@ export function CoworkersList() {
   }
 
   if (isLoadingData || !coworkerRows) {
-    return <>loading...</>;
+    return (
+      <S.LoadingContainer>
+        <Spinner />
+      </S.LoadingContainer>
+    );
   }
 
   return (

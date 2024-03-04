@@ -6,6 +6,7 @@ import { useModal } from '../../hooks/useModal';
 import { DeleteTeam } from './delete-team';
 import { TeamForm } from './team-form';
 import { useAppContext } from '../../hooks/useAppContext';
+import { Spinner } from '../../components/loading/spinner';
 
 export type Team = {
   id: string;
@@ -38,7 +39,11 @@ export function TeamsList() {
   }
 
   if (isLoadingData || !teams) {
-    return <>loading...</>;
+    return (
+      <S.LoadingContainer>
+        <Spinner />
+      </S.LoadingContainer>
+    );
   }
 
   return (
