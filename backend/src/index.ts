@@ -16,6 +16,7 @@ import { FetchCoworkersController } from './presentation/controllers/coworker/Fe
 import { DeleteCoworkerController } from './presentation/controllers/coworker/DeleteCoworker'
 import { FetchCoworkersUseCase } from './data/useCases/FetchCoworkers'
 import { DeleteCoworkerUseCase } from './data/useCases/DeleteCoworker'
+import cors from '@fastify/cors'
 
 const app = fastify({logger: true});
 app.addContentTypeParser(
@@ -30,11 +31,16 @@ app.addContentTypeParser(
     }
   }
 );
+app.register(cors, {
+  origin: "*",
+  methods: ["POST", "GET", "PUT", "DELETE"]
+});
+
 
 const teamDbRepository = new TeamDbRepository();
 const coworkerDbRepository = new CoworkerDbRepository();
 const createTeamUseCase = new CreateTeamUseCase(teamDbRepository);
-const createCoworkerUseCase = new CreateCoworkerUseCase(coworkerDbRepository);
+const createCoworkerUseCase = new CreateCoworkerUseCase(coworkerDbRepository, teamDbRepository);
 const updateCoworkerUseCase = new UpdateCoworkerUseCase(coworkerDbRepository);
 const fetchCoworkersUseCase = new FetchCoworkersUseCase(coworkerDbRepository, teamDbRepository);
 const deleteCoworkerUseCase = new DeleteCoworkerUseCase(coworkerDbRepository);
@@ -48,30 +54,46 @@ const deleteCoworkerController = new DeleteCoworkerController(deleteCoworkerUseC
 const deleteTeamController = new DeleteTeamController(deleteTeamUseCase);
 const fetchTeamsController = new FetchTeamsController(fetchTeamsUseCase);
 
-app.get('/teams', async () => {
-  return fetchTeamsController.handle();
+app.get('/teams', async (_request, reply) => {
+  const {body, statusCode} = await fetchTeamsController.handle();
+  reply.code(statusCode)
+  reply.send(body);
 })
 
-app.post('/team', {schema: {body:  bodyJsonTeamSchema}}, async (request, _reply) => createTeamController.handle(request))
+app.post('/team', {schema: {body:  bodyJsonTeamSchema}}, async (request, reply) => {
+  const {body, statusCode} = await createTeamController.handle(request);
+  reply.code(statusCode)
+  reply.send(body);
+});
 
 app.delete('/team/:teamId', async (request, reply) => {
-  return deleteTeamController.handle(request);
+  const {body, statusCode} = await deleteTeamController.handle(request);
+  reply.code(statusCode)
+  reply.send(body);
 })
 
 app.get('/coworkers', async (request, reply) => {
-  return fetchCoworkersController.handle();
+  const {body, statusCode} = await fetchCoworkersController.handle();
+  reply.code(statusCode)
+  reply.send(body);
 })
 
 app.post('/coworker', {schema: {body:  bodyJsonCoworkerSchema}}, async (request, reply) => {
-  return createCoworkerController.handle(request);
+  const {body, statusCode} = await createCoworkerController.handle(request);
+  reply.code(statusCode)
+  reply.send(body);
 })
 
 app.put('/coworker', {schema: {body:  bodyJsonCoworkerSchema}}, async (request, reply) => {
-  return updateCoworkerController.handle(request);
+  const {body, statusCode} = await updateCoworkerController.handle(request);
+  reply.code(statusCode)
+  reply.send(body);
 })
 
 app.delete('/coworker/:coworkerId', async (request, reply) => {
-  return deleteCoworkerController.handle(request);
+  const {body, statusCode} = await deleteCoworkerController.handle(request);
+  reply.code(statusCode)
+  reply.send(body);
 })
 
 app.listen({ port: 8080 }, (err) => {
