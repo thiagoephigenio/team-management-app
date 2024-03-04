@@ -7,9 +7,13 @@ interface DataTableAction {
   icon: ReactNode;
   callback: (value: Base) => void;
 }
+type DataTableColumn = {
+  name: string;
+  title: string;
+};
 
 interface DataTableProps {
-  columns: string[];
+  columns: DataTableColumn[];
   rows: Array<Base>;
   additionalColumn?: ReactNode;
   actions?: DataTableAction[];
@@ -22,15 +26,15 @@ export function DataTable({ actions, rows, columns }: DataTableProps) {
         <thead>
           <tr>
             {columns.map((column, index) => (
-              <th key={index}>{column}</th>
+              <th key={index}>{column.title}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((row, index) => (
             <tr key={index}>
-              {Object.entries(row).map(([key, rowItem]) => (
-                <td key={key}>{rowItem as ReactNode}</td>
+              {columns.map((column) => (
+                <td key={column.name}>{row[column.name] as ReactNode}</td>
               ))}
               {actions && (
                 <td>
