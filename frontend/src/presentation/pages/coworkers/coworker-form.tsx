@@ -25,7 +25,7 @@ const coworkerFormSchema = z.object({
     .string()
     .min(1, 'O telefone é obrigatório.')
     .refine(phoneNumberValidation, 'Formato de telefone inválido.'),
-  teamId: z.union([z.string(), z.undefined()]),
+  teamId: z.string().min(1, 'Nenhuma equipe selecionada.'),
 });
 
 export type CoworkerData = z.infer<typeof coworkerFormSchema>;
@@ -43,7 +43,7 @@ export function CoworkerForm({
   const { addCoworker, updateCoworker, teams, coworkers } = useAppContext();
   const defaultValues =
     action === 'edit' && coworker
-      ? coworkers.find((item) => item.id === coworker.id)
+      ? coworkers?.find((item) => item.id === coworker.id)
       : undefined;
   const coworkerForm = useForm<CoworkerData>({
     resolver: zodResolver(coworkerFormSchema),
@@ -59,7 +59,7 @@ export function CoworkerForm({
       } else {
         await updateCoworkerRequest(data);
         const { teamId, ...rest } = data;
-        const team = teams.find((item) => item.id === teamId) ?? ({} as Team);
+        const team = teams?.find((item) => item.id === teamId) ?? ({} as Team);
         if (coworker) {
           updateCoworker({
             ...rest,
@@ -95,7 +95,7 @@ export function CoworkerForm({
         <Input.Root>
           <Input.Label>Equipe</Input.Label>
           <Input.Select name="teamId">
-            {teams.map((team) => (
+            {teams?.map((team) => (
               <option key={team.id} value={team.id}>
                 {team.name}
               </option>
