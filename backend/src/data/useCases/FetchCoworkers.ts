@@ -24,7 +24,6 @@ export class FetchCoworkersUseCase implements FetchCoworkers {
       team: teams.find(team => team.id === coworker.teamId) ?? {} as CoworkerTeamModel
     }))
 
-    console.log('newCoworkers', newCoworkers)
     return newCoworkers;
   }
 }
